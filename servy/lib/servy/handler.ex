@@ -2,10 +2,25 @@ defmodule Servy.Handler do
   def handle(request) do
     request
     |> parse()
+    |> rewrite_path()
     |> log()
     |> route()
+    |> track()
     |> format_response()
   end
+
+  def track(%{status: 404, path: path} = conv) do
+    IO.puts("Warning: #{path} is on the loose!")
+    conv
+  end
+
+  def track(conv), do: conv
+
+  def rewrite_path(%{path: "/wildlife"} = conv) do
+    %{ conv | path: "/wildthings" }
+  end
+
+  def rewrite_path(conv), do: conv
 
   def log(cov), do: IO.inspect(cov)
 
@@ -19,26 +34,56 @@ defmodule Servy.Handler do
     %{method: method, path: path, resp_body: "", status: nil}
   end
 
-  def route(conv) do
-    route(conv, conv.method, conv.path)
-  end
+  # def route(conv) do
+  #   route(conv, conv.method, conv.path)
+  # end
 
-
-  def route(conv, "GET", "/wildthings") do
+  def route(%{method: "GET", path: "/wildthings"} = conv) do
     # this syntax below is shorthand for: Map.put(conv, :resp_body, "Bears, Lions, Tigers")
     # this shorthand only works when the key already exists in the map
     %{ conv | resp_body: "Bears, Lions, Tigers", status: 200}
   end
 
-  def route(conv, "GET", "/bears") do
+  def route(%{method: "GET", path: "/bears"} = conv) do
     %{ conv | resp_body: "Teddy, Grizzly, Pooh", status: 200}
   end
 
-  def route(conv, "GET", "/bears/" <> id) do
+  def route(%{method: "GET", path: "/bears/" <> id} = conv) do
     %{ conv | resp_body: "Bear #{id}", status: 200}
   end
 
-  def route(conv, _method, path) do
+  # def route(%{method: "GET", path: "/about"} = conv) do
+  #   file = Path.expand("../pages", __DIR__)
+  #   |> Path.join("about.html")
+  #   # path = Path.absname("servy/lib/pages/about.html")
+
+  #   case File.read(file) do
+  #     {:ok, content} -> %{ conv | resp_body: content, status: 200}
+  #     {:error, :enoent} -> %{ conv | resp_body: "File not found", status: 404}
+  #     {:error, reason} -> %{ conv | resp_body: "File error: #{reason}", status: 200}
+  #   end
+  # end
+
+  def route(%{method: "GET", path: "/about"} = conv) do
+    Path.expand("../pages", __DIR__)
+    |> Path.join("about.html")
+    |> File.read
+    |> handle_file(conv)
+  end
+
+  def handle_file({:ok, content}, conv) do
+    %{ conv | resp_body: content, status: 200}
+  end
+
+  def handle_file({:error, :enoent}, conv) do
+    %{ conv | resp_body: "File not found", status: 404}
+  end
+
+  def handle_file({:error, reason}, conv) do
+    %{ conv | resp_body: "File error: #{reason}", status: 200}
+  end
+
+  def route(%{ path: path } = conv) do
     %{ conv | resp_body: "No #{path} found!", status: 404 }
   end
 
@@ -64,41 +109,63 @@ defmodule Servy.Handler do
   end
 end
 
+# request = """
+# GET /wildthings HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+
+# """
+
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
+
+# request = """
+# GET /bears HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+
+# """
+
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
+
+# request = """
+# GET /bears/1 HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+
+# """
+
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
+
+# request = """
+# GET /bigfoot HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+
+# """
+
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
+
+# request = """
+# GET /wildlife HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+
+# """
+
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
+
 request = """
-GET /wildthings HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-response = Servy.Handler.handle(request)
-IO.puts(response)
-
-request = """
-GET /bears HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-response = Servy.Handler.handle(request)
-IO.puts(response)
-
-request = """
-GET /bears/1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-
-response = Servy.Handler.handle(request)
-IO.puts(response)
-
-request = """
-GET /bigfoot HTTP/1.1
+GET /about HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
