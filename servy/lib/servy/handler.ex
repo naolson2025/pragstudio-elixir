@@ -34,41 +34,49 @@ defmodule Servy.Handler do
   #   end
   # end
 
+  def route(%Conv{method: "POST", path: "/bears"} = conv) do
+    %{
+      conv
+      | resp_body: "Created a #{conv.params["type"]} bear named #{conv.params["name"]}",
+        status: 200
+    }
+  end
+
   def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
     # this syntax below is shorthand for: Map.put(conv, :resp_body, "Bears, Lions, Tigers")
     # this shorthand only works when the key already exists in the map
-    %{ conv | resp_body: "Bears, Lions, Tigers", status: 200}
+    %{conv | resp_body: "Bears, Lions, Tigers", status: 200}
   end
 
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
-    %{ conv | resp_body: "Teddy, Grizzly, Pooh", status: 200}
+    %{conv | resp_body: "Teddy, Grizzly, Pooh", status: 200}
   end
 
   def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
-    %{ conv | resp_body: "Bear #{id}", status: 200}
+    %{conv | resp_body: "Bear #{id}", status: 200}
   end
 
   def route(%Conv{method: "GET", path: "/about"} = conv) do
     @pages_path
     |> Path.join("about.html")
-    |> File.read
+    |> File.read()
     |> handle_file(conv)
   end
 
-  def route(%Conv{ path: path } = conv) do
-    %{ conv | resp_body: "No #{path} found!", status: 404 }
+  def route(%Conv{path: path} = conv) do
+    %{conv | resp_body: "No #{path} found!", status: 404}
   end
 
   def handle_file({:ok, content}, conv) do
-    %{ conv | resp_body: content, status: 200}
+    %{conv | resp_body: content, status: 200}
   end
 
   def handle_file({:error, :enoent}, conv) do
-    %{ conv | resp_body: "File not found", status: 404}
+    %{conv | resp_body: "File not found", status: 404}
   end
 
   def handle_file({:error, reason}, conv) do
-    %{ conv | resp_body: "File error: #{reason}", status: 200}
+    %{conv | resp_body: "File error: #{reason}", status: 200}
   end
 
   def format_response(%Conv{} = conv) do
@@ -137,12 +145,26 @@ end
 # response = Servy.Handler.handle(request)
 # IO.puts(response)
 
+# request = """
+# GET /about HTTP/1.1
+# Host: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+
+# """
+
+# response = Servy.Handler.handle(request)
+# IO.puts(response)
+
 request = """
-GET /about HTTP/1.1
+POST /bears HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 21
 
+name=Baloo&type=Grizzly
 """
 
 response = Servy.Handler.handle(request)
