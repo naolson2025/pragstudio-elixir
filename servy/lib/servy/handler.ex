@@ -6,6 +6,7 @@ defmodule Servy.Handler do
   import Servy.Plugins, only: [track: 1, rewrite_path: 1, log: 1]
   import Servy.Parser, only: [parse: 1]
   alias Servy.Conv
+  alias Servy.BearController
 
   @doc "Transforms a request into a response"
   def handle(request) do
@@ -35,11 +36,7 @@ defmodule Servy.Handler do
   # end
 
   def route(%Conv{method: "POST", path: "/bears"} = conv) do
-    %{
-      conv
-      | resp_body: "Created a #{conv.params["type"]} bear named #{conv.params["name"]}",
-        status: 200
-    }
+    BearController.create(conv, conv.params)
   end
 
   def route(%Conv{method: "GET", path: "/wildthings"} = conv) do
@@ -49,11 +46,12 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{method: "GET", path: "/bears"} = conv) do
-    %{conv | resp_body: "Teddy, Grizzly, Pooh", status: 200}
+    BearController.index(conv)
   end
 
   def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
-    %{conv | resp_body: "Bear #{id}", status: 200}
+    params = Map.put(conv.params, "id", id)
+    BearController.show(conv, params)
   end
 
   def route(%Conv{method: "GET", path: "/about"} = conv) do
@@ -101,27 +99,27 @@ end
 # response = Servy.Handler.handle(request)
 # IO.puts(response)
 
-# request = """
-# GET /bears HTTP/1.1
-# Host: example.com
-# User-Agent: ExampleBrowser/1.0
-# Accept: */*
+request = """
+GET /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
 
-# """
+"""
 
-# response = Servy.Handler.handle(request)
-# IO.puts(response)
+response = Servy.Handler.handle(request)
+IO.puts(response)
 
-# request = """
-# GET /bears/1 HTTP/1.1
-# Host: example.com
-# User-Agent: ExampleBrowser/1.0
-# Accept: */*
+request = """
+GET /bears/1 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
 
-# """
+"""
 
-# response = Servy.Handler.handle(request)
-# IO.puts(response)
+response = Servy.Handler.handle(request)
+IO.puts(response)
 
 # request = """
 # GET /bigfoot HTTP/1.1
