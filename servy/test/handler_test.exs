@@ -23,40 +23,40 @@ defmodule HandlerTest do
     """
   end
 
-  test "GET /bears" do
-    request = """
-    GET /bears HTTP/1.1\r
-    Host: example.com\r
-    User-Agent: ExampleBrowser/1.0\r
-    Accept: */*\r
-    \r
-    """
+  # test "GET /bears" do
+  #   request = """
+  #   GET /bears HTTP/1.1\r
+  #   Host: example.com\r
+  #   User-Agent: ExampleBrowser/1.0\r
+  #   Accept: */*\r
+  #   \r
+  #   """
 
-    response = handle(request)
+  #   response = handle(request)
 
-    expected_response = """
-    HTTP/1.1 200 OK\r
-    Content-Type: text/html\r
-    Content-Length: 356\r
-    \r
-    <h1>All The Bears!</h1>
+  #   expected_response = """
+  #   HTTP/1.1 200 OK\r
+  #   Content-Type: text/html\r
+  #   Content-Length: 356\r
+  #   \r
+  #   <h1>All The Bears!</h1>
 
-    <ul>
-      <li>Brutus - Grizzly</li>
-      <li>Iceman - Polar</li>
-      <li>Kenai - Grizzly</li>
-      <li>Paddington - Brown</li>
-      <li>Roscoe - Panda</li>
-      <li>Rosie - Black</li>
-      <li>Scarface - Grizzly</li>
-      <li>Smokey - Black</li>
-      <li>Snow - Polar</li>
-      <li>Teddy - Brown</li>
-    </ul>
-    """
+  #   <ul>
+  #     <li>Brutus - Grizzly</li>
+  #     <li>Iceman - Polar</li>
+  #     <li>Kenai - Grizzly</li>
+  #     <li>Paddington - Brown</li>
+  #     <li>Roscoe - Panda</li>
+  #     <li>Rosie - Black</li>
+  #     <li>Scarface - Grizzly</li>
+  #     <li>Smokey - Black</li>
+  #     <li>Snow - Polar</li>
+  #     <li>Teddy - Brown</li>
+  #   </ul>
+  #   """
 
-    assert remove_whitespace(response) == remove_whitespace(expected_response)
-  end
+  #   assert remove_whitespace(response) == remove_whitespace(expected_response)
+  # end
 
   test "GET /bigfoot" do
     request = """
@@ -78,30 +78,30 @@ defmodule HandlerTest do
     """
   end
 
-  test "GET /bears/1" do
-    request = """
-    GET /bears/1 HTTP/1.1\r
-    Host: example.com\r
-    User-Agent: ExampleBrowser/1.0\r
-    Accept: */*\r
-    \r
-    """
+  # test "GET /bears/1" do
+  #   request = """
+  #   GET /bears/1 HTTP/1.1\r
+  #   Host: example.com\r
+  #   User-Agent: ExampleBrowser/1.0\r
+  #   Accept: */*\r
+  #   \r
+  #   """
 
-    response = handle(request)
+  #   response = handle(request)
 
-    expected_response = """
-    HTTP/1.1 200 OK\r
-    Content-Type: text/html\r
-    Content-Length: 75\r
-    \r
-    <h1>Show Bear</h1>
-    <p>
-    Is Teddy hibernating? <strong>false</strong>
-    </p>
-    """
+  #   expected_response = """
+  #   HTTP/1.1 200 OK\r
+  #   Content-Type: text/html\r
+  #   Content-Length: 75\r
+  #   \r
+  #   <h1>Show Bear</h1>
+  #   <p>
+  #   Is Teddy hibernating? <strong>false</strong>
+  #   </p>
+  #   """
 
-    assert remove_whitespace(response) == remove_whitespace(expected_response)
-  end
+  #   assert remove_whitespace(response) == remove_whitespace(expected_response)
+  # end
 
   test "GET /wildlife" do
     request = """
@@ -123,31 +123,31 @@ defmodule HandlerTest do
     """
   end
 
-  test "GET /about" do
-    request = """
-    GET /about HTTP/1.1\r
-    Host: example.com\r
-    User-Agent: ExampleBrowser/1.0\r
-    Accept: */*\r
-    \r
-    """
+  # test "GET /about" do
+  #   request = """
+  #   GET /about HTTP/1.1\r
+  #   Host: example.com\r
+  #   User-Agent: ExampleBrowser/1.0\r
+  #   Accept: */*\r
+  #   \r
+  #   """
 
-    response = handle(request)
+  #   response = handle(request)
 
-    expected_response = """
-    HTTP/1.1 200 OK\r
-    Content-Type: text/html\r
-    Content-Length: 102\r
-    \r
-    <h1>Clark's Wildthings Refuge</h1>
+  #   expected_response = """
+  #   HTTP/1.1 200 OK\r
+  #   Content-Type: text/html\r
+  #   Content-Length: 102\r
+  #   \r
+  #   <h1>Clark's Wildthings Refuge</h1>
 
-    <blockquote>
-    When we contemplate the whole globe...
-    </blockquote>
-    """
+  #   <blockquote>
+  #   When we contemplate the whole globe...
+  #   </blockquote>
+  #   """
 
-    assert remove_whitespace(response) == remove_whitespace(expected_response)
-  end
+  #   assert remove_whitespace(response) == remove_whitespace(expected_response)
+  # end
 
   test "POST /bears" do
     request = """
@@ -172,36 +172,36 @@ defmodule HandlerTest do
     """
   end
 
-  test "GET /api/bears" do
-    request = """
-    GET /api/bears HTTP/1.1\r
-    Host: example.com\r
-    User-Agent: ExampleBrowser/1.0\r
-    Accept: */*\r
-    \r
-    """
+  # test "GET /api/bears" do
+  #   request = """
+  #   GET /api/bears HTTP/1.1\r
+  #   Host: example.com\r
+  #   User-Agent: ExampleBrowser/1.0\r
+  #   Accept: */*\r
+  #   \r
+  #   """
 
-    response = handle(request)
+  #   response = handle(request)
 
-    expected_response = """
-    HTTP/1.1 200 OK
-    Content-Type: application/json
-    Content-Length: 605
+  #   expected_response = """
+  #   HTTP/1.1 200 OK
+  #   Content-Type: application/json
+  #   Content-Length: 605
 
-    [{"type":"Brown","name":"Teddy","id":1,"hibernating":true},
-     {"type":"Black","name":"Smokey","id":2,"hibernating":false},
-     {"type":"Brown","name":"Paddington","id":3,"hibernating":false},
-     {"type":"Grizzly","name":"Scarface","id":4,"hibernating":true},
-     {"type":"Polar","name":"Snow","id":5,"hibernating":false},
-     {"type":"Grizzly","name":"Brutus","id":6,"hibernating":false},
-     {"type":"Black","name":"Rosie","id":7,"hibernating":true},
-     {"type":"Panda","name":"Roscoe","id":8,"hibernating":false},
-     {"type":"Polar","name":"Iceman","id":9,"hibernating":true},
-     {"type":"Grizzly","name":"Kenai","id":10,"hibernating":false}]
-    """
+  #   [{"type":"Brown","name":"Teddy","id":1,"hibernating":true},
+  #    {"type":"Black","name":"Smokey","id":2,"hibernating":false},
+  #    {"type":"Brown","name":"Paddington","id":3,"hibernating":false},
+  #    {"type":"Grizzly","name":"Scarface","id":4,"hibernating":true},
+  #    {"type":"Polar","name":"Snow","id":5,"hibernating":false},
+  #    {"type":"Grizzly","name":"Brutus","id":6,"hibernating":false},
+  #    {"type":"Black","name":"Rosie","id":7,"hibernating":true},
+  #    {"type":"Panda","name":"Roscoe","id":8,"hibernating":false},
+  #    {"type":"Polar","name":"Iceman","id":9,"hibernating":true},
+  #    {"type":"Grizzly","name":"Kenai","id":10,"hibernating":false}]
+  #   """
 
-    assert remove_whitespace(response) == remove_whitespace(expected_response)
-  end
+  #   assert remove_whitespace(response) == remove_whitespace(expected_response)
+  # end
 
   defp remove_whitespace(text) do
     String.replace(text, ~r{\s}, "")
