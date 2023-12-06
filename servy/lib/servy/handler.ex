@@ -7,16 +7,40 @@ defmodule Servy.Handler do
   import Servy.Parser, only: [parse: 1]
   alias Servy.Conv
   alias Servy.BearController
+  alias Servy.VideoCam
 
   @doc "Transforms a request into a response"
   def handle(request) do
     request
     |> parse()
     |> rewrite_path()
-    |> log()
+    # |> log()
     |> route()
     |> track()
     |> format_response()
+  end
+
+  def route(%Conv{ method: "GET", path: "/hibernate/" <> time} = conv) do
+    time |> String.to_integer() |> :timer.sleep()
+
+    %{ conv | status: 200, resp_body: "Awake!" }
+  end
+
+  def route(%Conv{ method: "GET", path: "/snapshots" } = conv) do
+    parent = self()
+
+    # asyncronously get snapshots from 3 cameras
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("camera1")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("camera2")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("camera3")}) end)
+
+    snapshot1 = receive do {:result, snapshot} -> snapshot end
+    snapshot2 = receive do {:result, snapshot} -> snapshot end
+    snapshot3 = receive do {:result, snapshot} -> snapshot end
+
+    snapshots = [snapshot1, snapshot2, snapshot3]
+
+    %{ conv | status: 200, resp_body: inspect snapshots }
   end
 
   # def route(conv) do
