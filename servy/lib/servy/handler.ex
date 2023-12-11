@@ -26,21 +26,17 @@ defmodule Servy.Handler do
     %{ conv | status: 200, resp_body: "Awake!" }
   end
 
-  def route(%Conv{ method: "GET", path: "/snapshots" } = conv) do
-    parent = self()
-
+  def route(%Conv{ method: "GET", path: "/sensors" } = conv) do
+    task = Task.async(fn -> Servy.Tracker.get_location("bigfoot") end)
     # asyncronously get snapshots from 3 cameras
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("camera1")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("camera2")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("camera3")}) end)
+    snapshots =
+      ["cam-1", "cam-2", "cam-3"]
+      |> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
+      |> Enum.map(&Task.await/1)
 
-    snapshot1 = receive do {:result, snapshot} -> snapshot end
-    snapshot2 = receive do {:result, snapshot} -> snapshot end
-    snapshot3 = receive do {:result, snapshot} -> snapshot end
+    where_is_bigfoot = Task.await(task)
 
-    snapshots = [snapshot1, snapshot2, snapshot3]
-
-    %{ conv | status: 200, resp_body: inspect snapshots }
+    %{ conv | status: 200, resp_body: inspect {snapshots, where_is_bigfoot} }
   end
 
   # def route(conv) do
